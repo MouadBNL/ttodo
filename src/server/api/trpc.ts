@@ -13,6 +13,7 @@ import { ZodError } from "zod";
 
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
+import { cookies } from "next/headers";
 
 /**
  * 1. CONTEXT

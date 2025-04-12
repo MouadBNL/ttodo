@@ -5,6 +5,8 @@ import { auth } from "@/server/auth";
 import { api, HydrateClient } from "@/trpc/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import SignedOut from "@/components/auth/SignedOut";
+import SignedIn from "@/components/auth/SignedIn";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -16,6 +18,28 @@ export default async function Home() {
 
   return (
     <HydrateClient>
+      <header className="border-b">
+        <div className="container mx-auto flex items-center justify-between py-3">
+          <Link href="/" className="text-2xl font-bold">
+            TTodo
+          </Link>
+          <nav className="flex gap-4">
+            <SignedOut>
+              <Button asChild>
+                <Link href="/auth/signin">Sign In</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/auth/signup">Sign Up</Link>
+              </Button>
+            </SignedOut>
+            <SignedIn>
+              <Button asChild>
+                <Link href="/u">Dashboard</Link>
+              </Button>
+            </SignedIn>
+          </nav>
+        </div>
+      </header>
       <main className="flex min-h-screen flex-col items-center justify-center">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
           <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">

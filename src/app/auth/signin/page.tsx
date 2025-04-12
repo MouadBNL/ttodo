@@ -14,8 +14,10 @@ import { signInSchema, type SignInRequest } from "@/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 
 export default function SignIn() {
+  const params = useSearchParams();
   const form = useForm<SignInRequest>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -39,6 +41,11 @@ export default function SignIn() {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="flex flex-col gap-4"
           >
+            {params.get("error") && (
+              <FormMessage>
+                Invalid email or password. Please try again.
+              </FormMessage>
+            )}
             <FormField
               control={form.control}
               name="email"

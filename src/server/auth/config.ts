@@ -130,4 +130,8 @@ export const authConfig = {
     strategy: "jwt",
     maxAge: 15 * 24 * 30 * 60, // 15 days
   },
+  pages: {
+    signIn: "/auth/signin",
+    newUser: "/auth/signup", // Will disable the new account creation screen when set
+  },
 } satisfies NextAuthConfig;

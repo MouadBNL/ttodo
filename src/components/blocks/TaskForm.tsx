@@ -6,6 +6,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -20,31 +21,38 @@ import {
   SelectValue,
 } from "../ui/select";
 import { DeleteIcon, XIcon } from "lucide-react";
-import { taskSchema } from "@/validators";
+import { taskSchema, type ITask } from "@/validators";
 import { DateTimePicker } from "../ui/date-time-picker";
 
-type FormValues = z.infer<typeof taskSchema>;
-
-export default function TaskForm() {
-  const form = useForm<FormValues>({
+export default function TaskForm({
+  onSubmit,
+}: {
+  onSubmit: (data: ITask) => void;
+}) {
+  const form = useForm<ITask>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
       task: "",
-      dueDate: new Date(), // Set default date to today
+      dueDate: new Date(),
+      completedAt: null,
+      priority: null,
     },
   });
 
-  const aa = form.getFieldState("dueDate");
-
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
+  const handleSubmit = async (data: ITask) => {
+    console.log("Form submitted with data:", data);
+    await onSubmit(data);
   };
+
   return (
     <Form {...form}>
       <form
         className="flex flex-col gap-4"
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(handleSubmit)}
       >
+        {/* {form.formState.errors && (
+          <FormMessage>{JSON.stringify(form.formState.errors)}</FormMessage>
+        )} */}
         <FormField
           control={form.control}
           name="task"
@@ -107,7 +115,9 @@ export default function TaskForm() {
               )}
             />
           </div>
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={form.formState.isSubmitting}>
+            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+          </Button>
         </div>
       </form>
     </Form>

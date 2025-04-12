@@ -122,8 +122,22 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
-    if (!ctx.session?.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+    console.log("protectedProcedure ctx:", {
+      ctx,
+      session: ctx.session,
+      user: ctx.session?.user,
+    });
+    console.log("So:", {
+      session: ctx.session,
+      user: ctx.session?.user,
+      val: !ctx.session?.user.id,
+    });
+    if (!ctx.session?.user.id) {
+      console.log("Why ??");    
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "You must be logged in",
+      });
     }
     return next({
       ctx: {

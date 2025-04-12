@@ -13,19 +13,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import type { UseFormReturn } from "react-hook-form";
-
-const FormSchema = z.object({
-  time: z.date({
-    required_error: "A date and time is required.",
-  }),
-});
 
 export function DateTimePicker({
   value,
   onChange,
 }: {
-  value: Date;
+  value: Date | null;
   onChange: (date: Date) => void;
 }) {
   function handleDateSelect(date: Date | undefined) {
@@ -72,7 +65,7 @@ export function DateTimePicker({
         <div className="sm:flex">
           <Calendar
             mode="single"
-            selected={value}
+            selected={value ?? undefined}
             onSelect={handleDateSelect}
             initialFocus
           />

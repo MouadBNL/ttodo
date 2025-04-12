@@ -104,3 +104,28 @@ export const users = createTable("user", (d) => ({
 //   }),
 //   (t) => [primaryKey({ columns: [t.identifier, t.token] })],
 // );
+
+export const tasks = createTable(
+  "task",
+  (d) => ({
+    id: d.integer({ mode: "number" }).primaryKey({ autoIncrement: true }),
+    userId: d
+      .text({ length: 255 })
+      .notNull()
+      .references(() => users.id),
+    task: d.text({ length: 255 }).notNull(),
+    dueDate: d.integer({ mode: "timestamp" }).notNull(),
+    priority: d.text({ length: 255 }),
+    completedAt: d.integer({ mode: "timestamp" }),
+    createdAt: d
+      .integer({ mode: "timestamp" })
+      .default(sql`(unixepoch())`)
+      .notNull(),
+    updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
+  }),
+  (t) => [index("user_id_idx").on(t.userId), index("task_idx").on(t.task)],
+);
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  user: one(users, { fields: [tasks.userId], references: [users.id] }),
+}));

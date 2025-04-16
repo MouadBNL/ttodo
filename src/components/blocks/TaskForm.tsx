@@ -71,7 +71,7 @@ export default function TaskForm({
           )}
         />
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex gap-4">
             <FormField
               control={form.control}
@@ -79,7 +79,7 @@ export default function TaskForm({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <DateTimePicker {...field} />
+                    <DateTimePicker {...field} size="sm" />
                   </FormControl>
                 </FormItem>
               )}
@@ -97,7 +97,7 @@ export default function TaskForm({
                       onValueChange={field.onChange}
                     >
                       <span className="relative">
-                        <SelectTrigger>
+                        <SelectTrigger size="sm">
                           <SelectValue placeholder="Priority" />
                         </SelectTrigger>
                         {field.value && (
@@ -120,12 +120,21 @@ export default function TaskForm({
               )}
             />
           </div>
-          <div className="flex items-center justify-between gap-4">
-            <Button variant="secondary" onClick={onCancel} type="button">
+          <div className="flex items-center justify-end gap-4">
+            <Button
+              variant="secondary"
+              onClick={onCancel}
+              type="button"
+              size="sm"
+            >
               Cancel
             </Button>
 
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting}
+              size="sm"
+            >
               {form.formState.isSubmitting ? "Submitting..." : "Submit"}
             </Button>
           </div>

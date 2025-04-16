@@ -44,7 +44,8 @@ TaskItem.Title = function TaskItemTitle({ children }: PropsWithChildren) {
   );
 };
 
-TaskItem.DueDate = function TaskItemDueDate({ dueDate }: { dueDate: Date }) {
+TaskItem.DueDate = function TaskItemDueDate({ dueDate }: { dueDate?: Date }) {
+  if (!dueDate) return;
   return (
     <p className="text-gray-5 00 text-xs font-light">
       {dueDate.toDateString()}
@@ -82,7 +83,7 @@ TaskItem.ActionEdit = function ActionEdit({
 }) {
   return (
     <Button
-      onClick={onClick}       
+      onClick={onClick}
       size="xs"
       variant="ghost"
       className="text-gray-500 hover:text-gray-800"

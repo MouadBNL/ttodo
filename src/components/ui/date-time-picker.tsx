@@ -17,9 +17,11 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 export function DateTimePicker({
   value,
   onChange,
+  size,
 }: {
   value: Date | null;
   onChange: (date: Date) => void;
+  size?: "lg" | "xs" | "sm" | "default";
 }) {
   function handleDateSelect(date: Date | undefined) {
     if (date) {
@@ -47,6 +49,7 @@ export function DateTimePicker({
         <FormControl>
           <Button
             variant={"outline"}
+            size={size}
             className={cn(
               "w-full pl-3 text-left font-normal",
               !value && "text-muted-foreground",

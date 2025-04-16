@@ -107,4 +107,38 @@ export const taskRouter = createTRPCRouter({
         .where(eq(tasks.id, input.id))
         .execute();
     }),
+  markAsDone: protectedProcedure
+    .input(z.object({ id: z.number(), done: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+      if (!input.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Task ID is required",
+        });
+      }
+
+      const existingTask = await db.query.tasks.findFirst({
+        where: eq(tasks.id, input.id),
+      });
+      if (!existingTask) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Task not found",
+        });
+      }
+      if (existingTask.userId !== userId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You do not have permission to update this task",
+        });
+      }
+
+      await db
+        .update(tasks)
+        .set({
+          completedAt: input.done ? new Date() : null,
+        })
+        .where(eq(tasks.id, input.id));
+    }),
 });

@@ -34,7 +34,7 @@ export default function TaskListController() {
   const updateTask = api.task.updateTask.useMutation({
     onMutate: async (task) => {
       await utils.task.getTasks.cancel();
-      const prevData = utils.task.getTasks.getData();
+      const prevData = structuredClone(utils.task.getTasks.getData());
       utils.task.getTasks.setData(undefined, (old) => {
         if (!old) return;
         let i = old.findIndex((e) => e.id == task.id);
@@ -47,7 +47,35 @@ export default function TaskListController() {
       utils.task.getTasks.invalidate();
       setEditable(null);
     },
-    onError() {
+    onError(err, updatedTask, ctx) {
+      utils.task.getTasks.setData(undefined, ctx?.prevData);
+      toast.error("Could not update task");
+    },
+  });
+
+  const markAsDone = api.task.markAsDone.useMutation({
+    onMutate: async (task) => {
+      await utils.task.getTasks.cancel();
+      const prevData = structuredClone(utils.task.getTasks.getData());
+      console.log({ prevData: JSON.parse(JSON.stringify(prevData)) });
+      utils.task.getTasks.setData(undefined, (old) => {
+        if (!old) return;
+        return old.map((e) => {
+          if (e.id == task.id) {
+            e.completedAt = task.done ? new Date() : null;
+          }
+          return e;
+        });
+      });
+      console.log({ prevData });
+      return { prevData };
+    },
+    onSuccess() {
+      utils.task.getTasks.invalidate();
+    },
+    onError(err, updatedTask, ctx) {
+      console.log("Err done: ", ctx);
+      utils.task.getTasks.setData(undefined, ctx?.prevData);
       toast.error("Could not update task");
     },
   });
@@ -79,7 +107,12 @@ export default function TaskListController() {
                 ) : (
                   <TaskItem task={task}>
                     <>
-                      <TaskItem.Checkbox />
+                      <TaskItem.Checkbox
+                        value={!!task.completedAt}
+                        onChange={(done) =>
+                          markAsDone.mutate({ id: task.id!, done: done })
+                        }
+                      />
                       <TaskItem.Details>
                         <TaskItem.Title>{task.task}</TaskItem.Title>
                         <TaskItem.DueDate dueDate={task.dueDate} />

@@ -26,8 +26,12 @@ import { DateTimePicker } from "../ui/date-time-picker";
 
 export default function TaskForm({
   onSubmit,
+  onCancel,
+  task,
 }: {
   onSubmit: (data: ITask) => void;
+  onCancel?: () => void;
+  task?: ITask;
 }) {
   const form = useForm<ITask>({
     resolver: zodResolver(taskSchema),
@@ -36,6 +40,7 @@ export default function TaskForm({
       dueDate: new Date(),
       completedAt: null,
       priority: null,
+      ...task,
     },
   });
 
@@ -58,7 +63,7 @@ export default function TaskForm({
           name="task"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Task</FormLabel>
+              {/* <FormLabel>Task</FormLabel> */}
               <FormControl>
                 <Input placeholder="Enter your task" {...field} />
               </FormControl>
@@ -115,9 +120,15 @@ export default function TaskForm({
               )}
             />
           </div>
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Submitting..." : "Submit"}
-          </Button>
+          <div className="flex items-center justify-between gap-4">
+            <Button variant="secondary" onClick={onCancel} type="button">
+              Cancel
+            </Button>
+
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+            </Button>
+          </div>
         </div>
       </form>
     </Form>

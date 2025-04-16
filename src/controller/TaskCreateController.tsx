@@ -20,5 +20,5 @@ export default function TaskCreateController({
     console.log("Creating task....");
     await createTask.mutateAsync(data);
   };
-  return <TaskForm onSubmit={onSubmit} />;
+  return <TaskForm onSubmit={onSubmit} onCancel={onCreated} />;
 }

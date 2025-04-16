@@ -75,9 +75,14 @@ TaskItem.ActionDelete = function ActionDelete({
   );
 };
 
-TaskItem.ActionEdit = function ActionEdit() {
+TaskItem.ActionEdit = function ActionEdit({
+  onClick,
+}: {
+  onClick?: () => void;
+}) {
   return (
     <Button
+      onClick={onClick}       
       size="xs"
       variant="ghost"
       className="text-gray-500 hover:text-gray-800"

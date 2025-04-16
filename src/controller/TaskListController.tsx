@@ -1,18 +1,14 @@
 "use client";
+import TaskForm from "@/components/blocks/TaskForm";
 import TaskItem from "@/components/blocks/TaskItem";
 import TaskList from "@/components/blocks/TaskList";
 import { api } from "@/trpc/react";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 export default function TaskListController() {
   const utils = api.useUtils();
-  const {
-    data: tasks,
-    error,
-    isFetching,
-    isLoading,
-  } = api.task.getTasks.useQuery();
+  const { data: tasks, isLoading } = api.task.getTasks.useQuery();
 
   const deleteTask = api.task.delete.useMutation({
     onMutate: async ({ id }) => {
@@ -35,6 +31,29 @@ export default function TaskListController() {
     },
   });
 
+  const updateTask = api.task.updateTask.useMutation({
+    onMutate: async (task) => {
+      await utils.task.getTasks.cancel();
+      const prevData = utils.task.getTasks.getData();
+      utils.task.getTasks.setData(undefined, (old) => {
+        if (!old) return;
+        let i = old.findIndex((e) => e.id == task.id);
+        old[i] = task;
+        return old;
+      });
+      return { prevData };
+    },
+    onSuccess() {
+      utils.task.getTasks.invalidate();
+      setEditable(null);
+    },
+    onError() {
+      toast.error("Could not update task");
+    },
+  });
+
+  const [editable, setEditable] = useState<number | null>(null);
+
   return (
     <div>
       <div className="grid grid-cols-1 gap-2">
@@ -48,20 +67,38 @@ export default function TaskListController() {
         {tasks && (
           <TaskList>
             {tasks.map((task) => (
-              <TaskItem task={task} key={task.id}>
-                <TaskItem.Checkbox />
-                <TaskItem.Details>
-                  <TaskItem.Title>{task.task}</TaskItem.Title>
-                  <TaskItem.DueDate dueDate={task.dueDate} />
-                </TaskItem.Details>
+              <div key={task.id}>
+                {editable == task.id ? (
+                  <div className="w-full rounded-lg border p-4">
+                    <TaskForm
+                      task={task}
+                      onSubmit={updateTask.mutateAsync}
+                      onCancel={() => setEditable(null)}
+                    />
+                  </div>
+                ) : (
+                  <TaskItem task={task}>
+                    <>
+                      <TaskItem.Checkbox />
+                      <TaskItem.Details>
+                        <TaskItem.Title>{task.task}</TaskItem.Title>
+                        <TaskItem.DueDate dueDate={task.dueDate} />
+                      </TaskItem.Details>
 
-                <TaskItem.Actions>
-                  <TaskItem.ActionEdit />
-                  <TaskItem.ActionDelete
-                    onClick={() => deleteTask.mutateAsync({ id: task.id! })}
-                  />
-                </TaskItem.Actions>
-              </TaskItem>
+                      <TaskItem.Actions>
+                        <TaskItem.ActionEdit
+                          onClick={() => setEditable(task.id!)}
+                        />
+                        <TaskItem.ActionDelete
+                          onClick={() =>
+                            deleteTask.mutateAsync({ id: task.id! })
+                          }
+                        />
+                      </TaskItem.Actions>
+                    </>
+                  </TaskItem>
+                )}
+              </div>
             ))}
           </TaskList>
         )}

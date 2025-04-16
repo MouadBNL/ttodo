@@ -73,7 +73,7 @@ export const taskRouter = createTRPCRouter({
           priority: input.priority,
           completedAt: null,
         })
-        .where(eq(tasks.userId, userId))
+        .where(eq(tasks.id, input.id))
         .execute();
     }),
   delete: protectedProcedure

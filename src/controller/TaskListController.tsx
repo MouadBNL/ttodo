@@ -3,6 +3,7 @@ import TaskItem from "@/components/blocks/TaskItem";
 import TaskList from "@/components/blocks/TaskList";
 import { api } from "@/trpc/react";
 import React from "react";
+import { toast } from "sonner";
 
 export default function TaskListController() {
   const utils = api.useUtils();
@@ -14,6 +15,21 @@ export default function TaskListController() {
   } = api.task.getTasks.useQuery();
 
   const deleteTask = api.task.delete.useMutation({
+    onMutate: async ({ id }) => {
+      await utils.task.getTasks.cancel();
+      const prevData = utils.task.getTasks.getData();
+      utils.task.getTasks.setData(undefined, (old) =>
+        old?.filter((e) => e.id != id),
+      );
+      return { prevData };
+    },
+
+    onError(err, newPost, ctx) {
+      // If the mutation fails, use the context-value from onMutate
+      utils.task.getTasks.setData(undefined, ctx?.prevData);
+      toast.error("Could not delete task");
+      console.log("ERR:", err.data);
+    },
     onSuccess() {
       utils.task.getTasks.invalidate();
     },
@@ -48,10 +64,6 @@ export default function TaskListController() {
               </TaskItem>
             ))}
           </TaskList>
-        )}
-
-        {isFetching && (
-          <div className="h-12 animate-pulse rounded-md bg-gray-100 p-4"></div>
         )}
       </div>
     </div>

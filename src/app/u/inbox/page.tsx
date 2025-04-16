@@ -7,6 +7,7 @@ import React from "react";
 
 export default async function InboxPage() {
   const session = await auth();
+
   if (session?.user) {
     void api.task.getTasks.prefetch();
   }

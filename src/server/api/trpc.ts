@@ -85,7 +85,7 @@ export const createTRPCRouter = t.router;
  * You can remove this if you don't like it, but it can help catch unwanted waterfalls by simulating
  * network latency that would occur in production but not in local development.
  */
-const timingMiddleware = t.middleware(async ({ next, path }) => {
+const timingMiddleware = t.middleware(async ( { next, path }) => {
   const start = Date.now();
 
   if (t._config.isDev) {
@@ -122,18 +122,7 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
 export const protectedProcedure = t.procedure
   .use(timingMiddleware)
   .use(({ ctx, next }) => {
-    console.log("protectedProcedure ctx:", {
-      ctx,
-      session: ctx.session,
-      user: ctx.session?.user,
-    });
-    console.log("So:", {
-      session: ctx.session,
-      user: ctx.session?.user,
-      val: !ctx.session?.user.id,
-    });
     if (!ctx.session?.user.id) {
-      console.log("Why ??");    
       throw new TRPCError({
         code: "UNAUTHORIZED",
         message: "You must be logged in",

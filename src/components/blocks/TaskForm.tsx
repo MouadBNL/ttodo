@@ -45,7 +45,6 @@ export default function TaskForm({
   });
 
   const handleSubmit = async (data: ITask) => {
-    console.log("Form submitted with data:", data);
     await onSubmit(data);
   };
 

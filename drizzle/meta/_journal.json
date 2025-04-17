@@ -15,6 +15,13 @@
       "when": 1744491495932,
       "tag": "0001_stiff_shooting_star",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1744812870133,
+      "tag": "0002_typical_true_believers",
+      "breakpoints": true
     }
   ]
 }

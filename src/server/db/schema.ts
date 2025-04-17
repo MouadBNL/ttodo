@@ -129,3 +129,25 @@ export const tasks = createTable(
 export const tasksRelations = relations(tasks, ({ one }) => ({
   user: one(users, { fields: [tasks.userId], references: [users.id] }),
 }));
+
+export const projects = createTable("project", (d) => ({
+  id: d
+    .text({ length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: d
+    .text({ length: 255 })
+    .notNull()
+    .references(() => users.id),
+  name: d.text().notNull(),
+  createdAt: d
+    .integer({ mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+  updatedAt: d.integer({ mode: "timestamp" }).$onUpdate(() => new Date()),
+}));
+
+export const projectsRelations = relations(projects, ({ one }) => ({
+  user: one(users, { fields: [projects.userId], references: [users.id] }),
+}));

@@ -3,7 +3,7 @@ import TaskForm from "@/components/blocks/TaskForm";
 import TaskItem from "@/components/blocks/TaskItem";
 import TaskList from "@/components/blocks/TaskList";
 import { api } from "@/trpc/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function TaskListController() {
@@ -24,7 +24,6 @@ export default function TaskListController() {
       // If the mutation fails, use the context-value from onMutate
       utils.task.getTasks.setData(undefined, ctx?.prevData);
       toast.error("Could not delete task");
-      console.log("ERR:", err.data);
     },
     onSuccess() {
       utils.task.getTasks.invalidate();
@@ -57,7 +56,6 @@ export default function TaskListController() {
     onMutate: async (task) => {
       await utils.task.getTasks.cancel();
       const prevData = structuredClone(utils.task.getTasks.getData());
-      console.log({ prevData: JSON.parse(JSON.stringify(prevData)) });
       utils.task.getTasks.setData(undefined, (old) => {
         if (!old) return;
         return old.map((e) => {
@@ -67,14 +65,12 @@ export default function TaskListController() {
           return e;
         });
       });
-      console.log({ prevData });
       return { prevData };
     },
     onSuccess() {
       utils.task.getTasks.invalidate();
     },
     onError(err, updatedTask, ctx) {
-      console.log("Err done: ", ctx);
       utils.task.getTasks.setData(undefined, ctx?.prevData);
       toast.error("Could not update task");
     },

@@ -1,4 +1,3 @@
-"use client";
 import * as React from "react";
 import {
   Sidebar,
@@ -12,159 +11,19 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
+import AppSiderbarStatic from "./app-sidebar-static";
+import { api } from "@/trpc/server";
+import { Button } from "@/components/ui/button";
+import { EllipsisIcon, ExpandIcon, MenuIcon, PlusIcon } from "lucide-react";
+import ProjectCreateModal from "@/components/blocks/ProjectCreateModal";
+import Link from "next/link";
+import ProjectItem from "./ProjectItem";
+import { AppSidebarProjects } from "./app-sidebar-projects";
 
-// This is sample data.
-
-const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
-  navMain: [
-    {
-      title: "Getting Started",
-      url: "#",
-      items: [
-        {
-          title: "Installation",
-          url: "#",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Building Your Application",
-      url: "#",
-      items: [
-        {
-          title: "Routing",
-          url: "#",
-        },
-        {
-          title: "Data Fetching",
-          url: "#",
-          isActive: true,
-        },
-        {
-          title: "Rendering",
-          url: "#",
-        },
-        {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "API Reference",
-      url: "#",
-      items: [
-        {
-          title: "Components",
-          url: "#",
-        },
-        {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Architecture",
-      url: "#",
-      items: [
-        {
-          title: "Accessibility",
-          url: "#",
-        },
-        {
-          title: "Fast Refresh",
-          url: "#",
-        },
-        {
-          title: "Next.js Compiler",
-          url: "#",
-        },
-        {
-          title: "Supported Browsers",
-          url: "#",
-        },
-        {
-          title: "Turbopack",
-          url: "#",
-        },
-      ],
-    },
-  ],
-};
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const path = usePathname();
-  const nav = {
-    items: [
-      {
-        title: "Dashboard",
-        url: "/u",
-      },
-      {
-        title: "Inbox",
-        url: "/u/inbox",
-      },
-    ].map((item) => ({
-      ...item,
-      isActive: path === item.url,
-    })),
-  };
-
+export async function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const projects = await api.project.list();
   return (
     <Sidebar {...props}>
       <SidebarHeader className="flex h-16 items-center justify-center border-b px-4">
@@ -176,15 +35,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SearchForm /> */}
       </SidebarHeader>
       <SidebarContent className="py-8">
-        <SidebarMenu>
-          {nav.items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={item.isActive}>
-                <a href={item.url}>{item.title}</a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        <AppSiderbarStatic />
+
+        <AppSidebarProjects />
 
         {/* {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
